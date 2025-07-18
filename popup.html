@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 400px;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin: 0;
+      border-radius: 8px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .container {
+      text-align: center;
+    }
+    
+    h1 {
+      margin: 0 0 15px 0;
+      font-size: 20px;
+      font-weight: 300;
+    }
+    
+    .file-input {
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      display: none;
+    }
+    
+    input[type="file"] {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 4px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    button {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      margin: 5px;
+    }
+    
+    button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .status {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      min-height: 20px;
+    }
+    
+    .status.success {
+      background: rgba(76, 175, 80, 0.3);
+    }
+    
+    .status.error {
+      background: rgba(244, 67, 54, 0.3);
+    }
+    
+    .status.info {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .info-text {
+      font-size: 12px;
+      margin: 10px 0;
+      opacity: 0.8;
+    }
+    
+    .word-choices {
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      text-align: left;
+      display: none;
+    }
+    
+    .word-choices h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      text-align: center;
+    }
+    
+    .word-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 5px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .word-button {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      margin: 2px;
+    }
+    
+    .word-button:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+    
+    .analysis-info {
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: left;
+      display: none;
+    }
+    
+    .analysis-info h4 {
+      margin: 5px 0;
+      font-size: 13px;
+    }
+    
+    .letter-list {
+      color: #ffd700;
+      font-weight: bold;
+    }
+    
+    .intro-text {
+      font-size: 13px;
+      margin: 10px 0;
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Wordle Solver</h1>
+    
+    <div class="intro-text">
+      Ready to solve! Word list loaded from output.txt
+    </div>
+    
+    <div class="file-input">
+      <input type="file" id="word-file" accept=".txt" />
+      <div class="info-text">Upload your 5-letter words .txt file</div>
+    </div>
+    
+    <button id="start-btn">Start Game</button>
+    <button id="analyze-btn" disabled>Analyze & Find Words</button>
+    
+    <div class="analysis-info" id="analysis-info">
+      <h4>Analysis Results:</h4>
+      <div><strong>Correct:</strong> <span id="correct-letters" class="letter-list"></span></div>
+      <div><strong>Misplaced:</strong> <span id="misplaced-letters" class="letter-list"></span></div>
+      <div><strong>Absent:</strong> <span id="absent-letters" class="letter-list"></span></div>
+      <div><strong>Untested:</strong> <span id="untested-letters" class="letter-list"></span></div>
+    </div>
+    
+    <div class="word-choices" id="word-choices">
+      <h3>Choose your next word:</h3>
+      <div class="word-grid" id="word-grid"></div>
+    </div>
+    
+    <div class="status info" id="status">Loading word list...</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
