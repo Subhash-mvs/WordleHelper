@@ -25,7 +25,7 @@ An intelligent Chrome extension that helps solve Wordle puzzles by analyzing gam
 
 ## 🎮 Usage
 
-1. **Navigate to Wordle**: Go to [Wordle](https://www.nytimes.com/games/wordle/index.html)
+1. **Navigate to Wordle**: Go to [Wordle](https://www.nytimes.com/games/wordle/index.html) and [Wordly](https://wordly.org/)
 2. **Open Extension**: Click the Wordle Solver icon in your toolbar
 3. **Start Game**: Click "Start Game" to begin with optimal starting words
 4. **Get Suggestions**: Click "Analyze & Find Words" after each attempt
