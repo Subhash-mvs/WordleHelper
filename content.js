@@ -1,6 +1,15 @@
 // Content script that runs on web pages to interact with the keyboard and analyze game state
 function findKeyboardButton(letter) {
-  const buttons = document.querySelectorAll('.Game-keyboard-button');
+  // Try new format first
+  let buttons = document.querySelectorAll('[data-key]');
+  for (let button of buttons) {
+    if (button.getAttribute('data-key') === letter.toLowerCase()) {
+      return button;
+    }
+  }
+  
+  // Fallback to old format
+  buttons = document.querySelectorAll('.Game-keyboard-button');
   for (let button of buttons) {
     if (button.textContent.trim().toLowerCase() === letter.toLowerCase()) {
       return button;
@@ -10,6 +19,11 @@ function findKeyboardButton(letter) {
 }
 
 function findEnterButton() {
+  // Try new format first
+  let button = document.querySelector('[data-key="↵"]');
+  if (button) return button;
+  
+  // Fallback to old format
   const buttons = document.querySelectorAll('.Game-keyboard-button');
   for (let button of buttons) {
     if (button.textContent.trim() === 'Enter') {
@@ -20,6 +34,11 @@ function findEnterButton() {
 }
 
 function findBackspaceButton() {
+  // Try new format first
+  let button = document.querySelector('[data-key="←"]');
+  if (button) return button;
+  
+  // Fallback to old format
   const buttons = document.querySelectorAll('.Game-keyboard-button');
   for (let button of buttons) {
     if (button.querySelector('svg') && button.classList.contains('Game-keyboard-button-wide')) {
@@ -80,6 +99,54 @@ async function typeWord(word, delay = 500) {
 }
 
 function getLastRowPattern() {
+  // Try new format first
+  const newBoard = document.querySelector('.Board-module_board__jeoPS');
+  if (newBoard) {
+    const rows = newBoard.querySelectorAll('.Row-module_row__pwpBq');
+    let lastCompletedRow = null;
+    
+    for (let row of rows) {
+      const tiles = row.querySelectorAll('.Tile-module_tile__UWEHN');
+      const hasContent = Array.from(tiles).every(tile => 
+        tile.getAttribute('data-state') !== 'empty'
+      );
+      
+      if (hasContent) {
+        lastCompletedRow = row;
+      }
+    }
+    
+    if (!lastCompletedRow) {
+      return {
+        success: false,
+        message: 'No completed rows found'
+      };
+    }
+    
+    const tiles = lastCompletedRow.querySelectorAll('.Tile-module_tile__UWEHN');
+    let pattern = '';
+    
+    tiles.forEach((tile) => {
+      const state = tile.getAttribute('data-state');
+      if (state === 'correct') {
+        pattern += 'C';
+      } else if (state === 'present') {
+        pattern += 'M';
+      } else if (state === 'absent') {
+        pattern += 'A';
+      } else {
+        pattern += '?';
+      }
+    });
+    
+    return {
+      success: true,
+      pattern: pattern,
+      message: `Pattern extracted: ${pattern}`
+    };
+  }
+  
+  // Fallback to old format
   const gameRows = document.querySelector('.game_rows');
   if (!gameRows) {
     return {
@@ -122,6 +189,44 @@ function getLastRowPattern() {
 }
 
 function checkForInvalidWord() {
+  // Try new format first
+  const newBoard = document.querySelector('.Board-module_board__jeoPS');
+  if (newBoard) {
+    const rows = newBoard.querySelectorAll('.Row-module_row__pwpBq');
+    
+    for (let row of rows) {
+      const tiles = row.querySelectorAll('.Tile-module_tile__UWEHN');
+      const hasContent = Array.from(tiles).some(tile => 
+        tile.textContent.trim() !== '' && 
+        tile.getAttribute('data-state') !== 'empty' &&
+        tile.getAttribute('data-state') !== 'correct' &&
+        tile.getAttribute('data-state') !== 'present' &&
+        tile.getAttribute('data-state') !== 'absent'
+      );
+      
+      // Check if row has content but tiles are in an invalid state
+      if (hasContent) {
+        const word = Array.from(tiles)
+          .map(tile => tile.textContent.trim().toLowerCase())
+          .join('');
+        
+        return {
+          success: true,
+          isInvalid: true,
+          invalidWord: word,
+          message: `Invalid word detected: ${word}`
+        };
+      }
+    }
+    
+    return {
+      success: true,
+      isInvalid: false,
+      message: 'No invalid word detected'
+    };
+  }
+  
+  // Fallback to old format
   const gameRows = document.querySelector('.game_rows');
   if (!gameRows) {
     return {
@@ -163,6 +268,55 @@ function checkForInvalidWord() {
 }
 
 function getAllCompletedRows() {
+  // Try new format first
+  const newBoard = document.querySelector('.Board-module_board__jeoPS');
+  if (newBoard) {
+    const rows = newBoard.querySelectorAll('.Row-module_row__pwpBq');
+    const completedRows = [];
+
+    rows.forEach(row => {
+      const tiles = row.querySelectorAll('.Tile-module_tile__UWEHN');
+      const hasContent = Array.from(tiles).every(tile => 
+        tile.getAttribute('data-state') !== 'empty'
+      );
+      
+      if (hasContent) {
+        let word = '';
+        let pattern = '';
+        
+        tiles.forEach((tile) => {
+          const letter = tile.textContent.trim().toLowerCase();
+          word += letter;
+          
+          const state = tile.getAttribute('data-state');
+          if (state === 'correct') {
+            pattern += 'C';
+          } else if (state === 'present') {
+            pattern += 'M';
+          } else if (state === 'absent') {
+            pattern += 'A';
+          } else {
+            pattern += '?';
+          }
+        });
+        
+        if (word.length === 5) {
+          completedRows.push({
+            word: word,
+            pattern: pattern
+          });
+        }
+      }
+    });
+
+    return {
+      success: true,
+      rows: completedRows,
+      message: `Found ${completedRows.length} completed rows`
+    };
+  }
+  
+  // Fallback to old format
   const gameRows = document.querySelector('.game_rows');
   if (!gameRows) {
     return {
@@ -210,6 +364,82 @@ function getAllCompletedRows() {
 }
 
 function analyzeGameState() {
+  // Try new format first
+  const newBoard = document.querySelector('.Board-module_board__jeoPS');
+  if (newBoard) {
+    const rows = newBoard.querySelectorAll('.Row-module_row__pwpBq');
+    const completedRows = [];
+    
+    rows.forEach(row => {
+      const tiles = row.querySelectorAll('.Tile-module_tile__UWEHN');
+      const hasContent = Array.from(tiles).every(tile => 
+        tile.getAttribute('data-state') !== 'empty'
+      );
+      
+      if (hasContent) {
+        completedRows.push(row);
+      }
+    });
+    
+    if (completedRows.length === 0) {
+      return {
+        success: false,
+        message: 'No completed rows found'
+      };
+    }
+
+    let correctLetters = {};
+    let misplacedLetters = {};
+    let absentLetters = [];
+
+    completedRows.forEach(row => {
+      const tiles = row.querySelectorAll('.Tile-module_tile__UWEHN');
+      
+      tiles.forEach((tile, position) => {
+        const letter = tile.textContent.trim().toLowerCase();
+        const state = tile.getAttribute('data-state');
+        
+        if (state === 'correct') {
+          correctLetters[position] = letter;
+        } else if (state === 'present') {
+          if (!misplacedLetters[letter]) {
+            misplacedLetters[letter] = [];
+          }
+          misplacedLetters[letter].push(position);
+        } else if (state === 'absent') {
+          if (!absentLetters.includes(letter)) {
+            absentLetters.push(letter);
+          }
+        }
+      });
+    });
+
+    // Remove misplaced letters from absent letters if they appear as misplaced
+    Object.keys(misplacedLetters).forEach(letter => {
+      const index = absentLetters.indexOf(letter);
+      if (index > -1) {
+        absentLetters.splice(index, 1);
+      }
+    });
+
+    // Remove correct letters from absent letters
+    Object.values(correctLetters).forEach(letter => {
+      const index = absentLetters.indexOf(letter);
+      if (index > -1) {
+        absentLetters.splice(index, 1);
+      }
+    });
+
+    return {
+      success: true,
+      correctLetters,
+      misplacedLetters,
+      absentLetters,
+      message: `Analyzed ${completedRows.length} completed rows`
+    };
+  }
+  
+  // Fallback to old format
   const gameRows = document.querySelector('.game_rows');
   if (!gameRows) {
     return {
@@ -284,7 +514,13 @@ if (!window.wordleListenerRegistered) {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.action) {
       case 'typeWord':
-        const keyboard = document.querySelector('.Game-keyboard');
+        // Check for new format keyboard first
+        let keyboard = document.querySelector('.Keyboard-module_keyboard__uYuqf');
+        if (!keyboard) {
+          // Fallback to old format
+          keyboard = document.querySelector('.Game-keyboard');
+        }
+        
         if (!keyboard) {
           sendResponse({
             success: false,
