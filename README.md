@@ -86,43 +86,4 @@ The extension uses sophisticated pattern matching:
 ### Building
 No build process required - it's vanilla JavaScript!
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## ⚠️ Disclaimer
-
-This extension is for educational and entertainment purposes. Use responsibly and in accordance with the game's terms of service.
-
-## 🎯 Future Features
-
-- [ ] Multiple game site support
-- [ ] Custom word lists
-- [ ] Statistics tracking
-- [ ] Dark mode interface
-- [ ] Word difficulty analysis
-- [ ] Export/import game history
-
-## 🐛 Known Issues
-
-- Requires page refresh after installation
-- May need manual reactivation after Wordle updates
-
-## 📞 Support
-
-If you encounter issues or have suggestions:
-1. Check existing [Issues](https://github.com/yourusername/wordle-solver/issues)
-2. Create a new issue with detailed description
-3. Include browser version and error messages
-
----
-
 **Happy Wordling! 🎉**
